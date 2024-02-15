@@ -1,0 +1,167 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addCotizadors">
+                        <i class="fas fa-plus"></i>Adicionar
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-secondary" (click)="listCotizador()">
+                    <i class="fas fa-eye"></i>Ver todos
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            placeholder = "Digite la palabra o valor a buscar"
+                            [(ngModel)]="palabraBuscar">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                        <button type="button" class="btn btn-success" (click)="searchCotizador()"
+                            [disabled]="!filterForm.valid">
+                        <i class="fas fa-search"></i>Buscar
+                        </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de cotizadors-->
+
+<section id="cotizadores">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de empresas con sus valores cotizados</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Numero documento</td>
+                                <td>Nombre</td>
+                                <td>Valor administración</td>
+                                <td>Pago individual</td>
+                                <td>Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let cotizador of cotizadores; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{cotizador.idEmpresa}}</td>
+                                <td>{{cotizador.nombre}}</td>
+                                <td>{{cotizador.valorAdministracion | number}}</td>
+                                <td *ngIf="cotizador.pagoIndividual==1">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="pagoIndividual"
+                                            checked disabled>
+                                    </div>
+                                </td>
+                                <td *ngIf="cotizador.pagoIndividual==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="pagoIndividual"
+                                            disabled>
+                                    </div>
+                                </td>
+                                <td *ngIf="cotizador.activo==1">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(cotizador)">
+                                    </div>
+                                </td>
+                                <td *ngIf="cotizador.activo==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(cotizador)">
+                                    </div>
+                                </td>
+                                <td>
+                                    <a routerLink="/cotizador" class="secondary-content"><i
+                                            (click)="getCotizador(cotizador)" class="fa fa-pencil"
+                                            data-toggle="modal" data-target="#addCotizadors"></i></a>
+                                    <a routerLink="/cotizador" class="secondary-content"><i
+                                            (click)="delCotizador(cotizador)" class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addCotizadors" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Adicionar cotizador</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar cotizador</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="idEmpresa">Empresa</label>
+                        <select class="custom-select custom-select-sm" formControlName="idEmpresa"
+                            [(ngModel)]="cotizador.idEmpresa">
+                            <option [value]="empresa.numeroIdentificacion" *ngFor="let empresa of empresas">{{ empresa.nombre }}</option>
+                        </select>
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('idEmpresa')?.invalid && (addForm.get('idEmpresa')?.dirty || addForm.get('idEmpresa')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="valorAdministracion">Valor de administración</label>
+                        <input type="number" class="form-control" formControlName="valorAdministracion"
+                            [(ngModel)]="cotizador.valorAdministracion">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('valorAdministracion')?.invalid && (addForm.get('valorAdministracion')?.dirty || addForm.get('valorAdministracion')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group" *ngIf="cotizador.pagoIndividual==0">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" formControlName ="pagoIndividual"
+                            (click)="changeValue(cotizador)" >El pago es individual
+                        </div>
+                    </div>
+                    <div class="form-group" *ngIf="cotizador.pagoIndividual==1">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" formControlName ="pagoIndividual"
+                            (click)="changeValue(cotizador)" 
+                            [(ngModel)]="cotizador.pagoIndividual">El pago es individual
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addCotizador()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="updateCotizador()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

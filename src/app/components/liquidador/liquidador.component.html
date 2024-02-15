@@ -1,0 +1,85 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="idEmpresa">Empresa</label>
+                    <select class="custom-select custom-select-sm" formControlName="idEmpresa"
+                        [(ngModel)]="idEmpresa" (change)="listEmpleado()">
+                        <option [value]="empresa.numeroIdentificacion" *ngFor="let empresa of empresas">{{ empresa.nombre }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="anio">Año</label>
+                        <select class="custom-select custom-select-sm" formControlName="anio"
+                            [(ngModel)]="anio" (change)="listEmpleado()">
+                            <option [value]="anio" *ngFor="let anio of anios">{{ anio }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="mes">Mes</label>
+                        <select class="custom-select custom-select-sm" formControlName="mes"
+                            [(ngModel)]="mes" (change)="listEmpleado()">
+                            <option [value]="mes" *ngFor="let mes of meses; let idMes = index">{{ mes }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <br>
+                    <button type="button" class="btn btn-success" (click)="liquidar()"
+                        [disabled]="!filterForm.valid">
+                    <i class="fas fa-play"></i>Liquidar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de empleados-->
+<section id="empleados">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de empleados con sus valores a pagar</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Documento #</th>
+                                <th>Nombre</th>
+                                <th>Salario</th>
+                                <th>Administración</th>
+                                <th>Aportes</th>
+                                <th>Dias</th>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let empleado of empleados; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{empleado.idPersona}}</td>
+                                <td>{{empleado.nombrePersona}}</td>
+                                <td align="right">{{empleado.salario | number}}</td>
+                                <td align="right">{{empleado.valorAdministracion | number}}</td>
+                                <td align="right">{{empleado.valorAporte | number}}</td>
+                                <td align="center">{{empleado.cantidadDias | number}}</td>
+                                <td>
+                                    <a routerLink="/liquidador" class="secondary-content">
+                                    <i (click)="delEmpleado(empleado.id)" class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

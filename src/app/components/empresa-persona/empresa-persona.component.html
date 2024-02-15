@@ -1,0 +1,198 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <!--<label for="idEmpresa">Empresa</label>-->
+                    <select class="custom-select custom-select-sm" formControlName="idEmpresa"
+                    [(ngModel)]="idEmpresa" (change)="listByEmpresa(idEmpresa)">
+                    <option [value]="empresa.numeroIdentificacion" *ngFor="let empresa of empresas">{{ empresa.nombre }}</option>
+                </select>
+                </div>
+                <div class="col-md-3">
+                    
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="palabra">Palabra clave</label>-->
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            [(ngModel)]="palabraBuscar"
+                            placeholder = "Digite la palabra o valor a buscar"
+                            >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-success" (click)="searchPersona()"
+                        [disabled]="!filterForm.valid">
+                        <i class="fas fa-search"></i>Buscar
+                    </button>
+                    <button type="button" class="btn btn-secondary" (click)="listEmpresaPersona()">
+                        <i class="fas fa-eye"></i>Ver todos
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de personas-->
+<section id="personas">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de empleados vinculados a empresas</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Documento empleado</td>
+                                <td>Nombre empleado</td>
+                                <td>Documento empresa</td>
+                                <td>Nombre empresa</td>
+                                <td>Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let persona of personas; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{persona.idPersona}}</td>
+                                <td>{{persona.nombrePersona}}</td>
+                                <td>{{persona.idEmpresa}}</td>
+                                <td>{{persona.nombreEmpresa}}</td>
+                                <td *ngIf="persona.activo==1">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(persona.id)">
+                                    </div>
+                                </td>
+                                <td *ngIf="persona.activo==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(persona.id)">
+                                    </div>
+                                </td>
+                                <td>
+                                    <a routerLink="/empresaPersona" class="secondary-content"><i
+                                        (click)="getEmpresaPersona(persona)" class="fa fa-link" data-toggle="modal"
+                                        data-target="#addEmpresaPersona"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addEmpresaPersona" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Vincular empleado a empresa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <p><b>Numero de identificación:</b> {{empresaPersona.idPersona}}</p>
+                            <p><b>Nombre del empleado:</b> {{empresaPersona.nombrePersona}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="idEmpresa">Empresa</label>
+                            <select class="custom-select custom-select-sm" formControlName="idEmpresa"
+                                [(ngModel)]="empresaPersona.idEmpresa" (change)="listEmpresaEmpleado(empresaPersona.idPersona)">
+                                <option [value]="empresa.numeroIdentificacion" *ngFor="let empresa of empresas">{{ empresa.nombre }}</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="cargo">Cargo</label>
+                                <input type="text" class="form-control" formControlName="cargo"
+                                    [(ngModel)]="empresaPersona.cargo">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addForm.get('cargo')?.invalid && (addForm.get('cargo')?.dirty || addForm.get('cargo')?.touched)">
+                                        Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="salario">Salario</label>
+                                <input type="text" class="form-control" formControlName="salario"
+                                    [(ngModel)]="empresaPersona.salario">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addForm.get('salario')?.invalid && (addForm.get('salario')?.dirty || addForm.get('salario')?.touched)">
+                                        Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <br>
+                            <button type="button" 
+                                class="btn btn-success" 
+                                (click)="addEmpresaPersona()" 
+                                [disabled]="!addForm.valid">
+                                Adicionar
+                            </button>
+                        </div>
+                    </div>
+                    <br>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Numero documento</td>
+                                <td>Nombre empresa</td>
+                                <td>Cargo</td>
+                                <td>Salario</td>
+                                <td>Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let empresaPersona of empresaPersonas; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{empresaPersona.idEmpresa}}</td>
+                                <td>{{empresaPersona.nombreEmpresa}}</td>
+                                <td>{{empresaPersona.cargo}}</td>
+                                <td>{{empresaPersona.salario}}</td>
+                                <td *ngIf="empresaPersona.activo==1">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(empresaPersona.id)">
+                                    </div>
+                                </td>
+                                <td *ngIf="empresaPersona.activo==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(empresaPersona.id)">
+                                    </div>
+                                </td>
+                                <td>
+                                    <a routerLink="/empresaPersona" class="secondary-content"><i (click)="delEmpresaPersona(empresaPersona)"
+                                            class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

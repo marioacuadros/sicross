@@ -1,0 +1,179 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addEmpresas">
+                        <i class="fas fa-plus"></i>Adicionar empresas
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-secondary" (click)="listEmpresa()">
+                    <i class="fas fa-eye"></i>Ver todos
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="palabra">Palabra clave</label>-->
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            [(ngModel)]="palabraBuscar"
+                            placeholder = "Digite la palabra o valor a buscar"
+                        >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                        <button type="button" class="btn btn-success" (click)="searchEmpresa()"
+                            [disabled]="!filterForm.valid">
+                        <i class="fas fa-search"></i>Buscar
+                        </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de empresas-->
+<section id="empresas">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de empresas</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Numero documento</td>
+                                <td>Nombre</td>
+                                <td>Municipio - Departamento</td>
+                                <td>Dirección</td>
+                                <td>Teléfono</td>
+                                <td>Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let empresa of empresas; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{empresa.numeroIdentificacion}}</td>
+                                <td>{{empresa.nombre}}</td>
+                                <td>{{empresa.municipio}}</td>
+                                <td>{{empresa.direccion}}</td>
+                                <td>{{empresa.telefono}}</td>
+                                <td *ngIf="empresa.activo==1">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(empresa)">
+                                    </div>
+                                </td>
+                                <td *ngIf="empresa.activo==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(empresa)">
+                                    </div>
+                                </td>
+                                <td>
+                                    <a routerLink="/empresa" class="secondary-content"><i
+                                            (click)="getEmpresa(empresa)" class="fa fa-pencil"
+                                            data-toggle="modal" data-target="#addEmpresas"></i></a>
+                                    <a routerLink="/empresa" class="secondary-content"><i
+                                            (click)="delEmpresa(empresa)" class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addEmpresas" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Adicionar empresa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar empresa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="idTipoDocumento">Tipo de documento</label>
+                        <select class="custom-select custom-select-sm" formControlName="idTipoDocumento"
+                            [(ngModel)]="empresa.idTipoDocumento" (change)="listTipoDocumento()">
+                            <option [value]="tipoDocumento.id" *ngFor="let tipoDocumento of tiposDocumento">{{ tipoDocumento.tipoDocumento }}</option>
+                        </select>
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('numeroIdentificacion')?.invalid && (addForm.get('numeroIdentificacion')?.dirty || addForm.get('numeroIdentificacion')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="numeroIdentificacion">Número de documento</label>
+                        <input type="number" class="form-control" formControlName="numeroIdentificacion"
+                            [(ngModel)]="empresa.numeroIdentificacion">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('numeroIdentificacion')?.invalid && (addForm.get('numeroIdentificacion')?.dirty || addForm.get('numeroIdentificacion')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" class="form-control" formControlName="nombre"
+                            [(ngModel)]="empresa.nombre">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('nombre')?.invalid && (addForm.get('nombre')?.dirty || addForm.get('nombre')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="direccion">Dirección</label>
+                        <input type="text" class="form-control" formControlName="direccion"
+                            [(ngModel)]="empresa.direccion">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="number" class="form-control" formControlName="telefono"
+                            [(ngModel)]="empresa.telefono">
+                    </div>
+                    <div class="form-group">
+                        <label for="idDepartamento">Departamento</label>
+                        <select class="custom-select custom-select-sm" formControlName="idDepartamento"
+                            [(ngModel)]="idDepartamento" (change)="listMunicipio()">
+                            <option [value]="departamento.idDepartamento" *ngFor="let departamento of departamentos">{{ departamento.departamento }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="idMunicipio">Municipio</label>
+                        <select class="custom-select custom-select-sm" formControlName="idMunicipio"
+                            [(ngModel)]="empresa.idMunicipio">
+                            <option [value]="municipio.idMunicipio" *ngFor="let municipio of municipios">{{ municipio.municipio }}</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addEmpresa()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="updateEmpresa()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

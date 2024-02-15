@@ -1,0 +1,190 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="idEmpresa">Empresa</label>
+                    <select class="custom-select custom-select-sm" formControlName="idEmpresa"
+                        [(ngModel)]="idEmpresa" (change)="listCobro()">
+                        <option [value]="empresa.numeroIdentificacion" *ngFor="let empresa of empresas">{{ empresa.nombre }}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="anio">Año</label>
+                        <select class="custom-select custom-select-sm" formControlName="anio"
+                            [(ngModel)]="anio" (change)="listCobro()">
+                            <option [value]="anio" *ngFor="let anio of anios">{{ anio }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="mes">Mes</label>
+                        <select class="custom-select custom-select-sm" formControlName="mes"
+                            [(ngModel)]="mes" (change)="listCobro()">
+                            <option [value]="mes" *ngFor="let mes of meses; let idMes = index">{{ mes }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de cobros-->
+<section id="cobros">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de valores para cobrar a la empresa</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th align="center">#</th>
+                                <th align="center">Documento #</th>
+                                <th align="center">Empresa</th>
+                                <th align="center">Administración</th>
+                                <th align="center">Aportes</th>
+                                <th align="center">Total</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let cobro of cobros; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{cobro.idEmpresa}}</td>
+                                <td>{{cobro.empresa}}</td>
+                                <td align="center">{{cobro.administracion | number}}</td>
+                                <td align="center">{{cobro.aportes | number}}</td>
+                                <td align="center">{{cobro.total | number}}</td>
+                                <td>
+                                    <a routerLink="/cobroEmpresa" class="secondary-content" alt = "Generar cobro">
+                                    <i (click)="getCobro(cobro)" class="fa fa-play" 
+                                    data-toggle="modal"
+                                    data-target="#addCobro"></i></a>
+                                </td>
+                                <!--<td>
+                                    <a routerLink="/cobroEmpresa" class="secondary-content" alt = "Cuenta de cobro">
+                                    <i (click)="getCuenta(cobro)" class="fa fa-file" ></i></a>
+                                </td>-->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addCobro" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generar cobro de aportes a la empresa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class = "row">
+                        <div class = "col-4">
+                            <p><b>Documento # </b> {{cobro.idEmpresa}} </p>
+                        </div>
+                        <div class = "col-4">
+                            <p><b>Empresa </b> {{cobro.empresa}} </p>
+                        </div>
+                        <div class = "col-4">
+                            <p><b>Año </b> {{cobro.anio}} <b>Mes </b> {{cobro.mes}} </p>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class = "col-4">
+                            <div class="form-group">
+                                <label for="administracion">Administración</label>
+                                <input type="text" class="form-control" formControlName="administracion"
+                                    [(ngModel)]="cobro.administracion">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addForm.get('administracion')?.invalid && (addForm.get('administracion')?.dirty || addForm.get('administracion')?.touched)">
+                                        Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <div class="form-group">
+                                <label for="aportes">Aportes</label>
+                                <input type="text" class="form-control" formControlName="aportes"
+                                    [(ngModel)]="cobro.aportes">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addForm.get('aportes')?.invalid && (addForm.get('aportes')?.dirty || addForm.get('aportes')?.touched)">
+                                        Este campo es requerido
+                                    </div>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <p><b>Total </b> {{cobro.total | number}}</p>
+                        </div>
+                    </div>
+                    <div class=" row">
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label for="banco">Cuenta de banco</label>
+                                <select class="custom-select custom-select-sm" formControlName="banco"
+                                [(ngModel)]="cobro.cuenta">
+                                    <option [value]="banco.cuenta" *ngFor="let banco of bancos">{{ banco.cuenta }}</option>
+                                </select>
+                            </div>  
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class = "col-4">
+                            <p><b>Tipo de facturación a realizar </b></p>   
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class = "col-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" formControlName="opcion" value = "1"
+                                [(ngModel)]="cobro.opcion">
+                                <label class="form-check-label" for="optionAdministracion">
+                                Únicamente administración
+                                </label>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" formControlName="opcion" value = "2"
+                                [(ngModel)]="cobro.opcion">
+                                <label class="form-check-label" for="optionAporte">
+                                Únicamente aportes
+                                </label>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" formControlName="opcion" value = "3"
+                                [(ngModel)]="cobro.opcion">
+                                <label class="form-check-label" for="optionTodos">
+                                Ambos valores
+                                </label>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="facturar(cobro)" [disabled]="!addForm.valid"
+                data-dismiss="modal">Facturar</button>
+            </div>
+        </div>
+    </div>
+</div>
+

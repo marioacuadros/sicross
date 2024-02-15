@@ -1,0 +1,433 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addAfiliacion">
+                        <i class="fas fa-plus"></i>Crear afiliación
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <!--<label for="idEmpresa">Empresa</label>-->
+                    <select class="custom-select custom-select-sm" formControlName="idEmpresa"
+                    [(ngModel)]="idEmpresa" (change)="listByEmpresa(idEmpresa)">
+                    <option [value]="empresa.numeroIdentificacion" *ngFor="let empresa of empresas">{{ empresa.nombre }}</option>
+                </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="palabra">Palabra clave</label>-->
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            [(ngModel)]="palabraBuscar"
+                            placeholder = "Digite la palabra o valor a buscar"
+                            >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-success" (click)="searchAfiliacion()"
+                        [disabled]="!filterForm.valid">
+                        <i class="fas fa-search"></i>Buscar
+                    </button>
+                    <button type="button" class="btn btn-secondary" (click)="listAfiliacion()">
+                        <i class="fas fa-eye"></i>Ver todos
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de personas-->
+<section id="personas">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de afiliados</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Documento</td>
+                                <td>Empleado</td>
+                                <td>Empresa</td>
+                                <td>Dirección</td>
+                                <td>Teléfono</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let afiliado of afiliados; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{afiliado.idPersona}}</td>
+                                <td>{{afiliado.nombrePersona}}</td>
+                                <td>{{afiliado.nombreEmpresa}}</td>
+                                <td>{{afiliado.direccion}}</td>
+                                <td>{{afiliado.celular}}</td>
+                                <td>
+                                    <a routerLink="/afiliacion" class="secondary-content" ><i
+                                            (click)="getAfiliacion(afiliado)" class="fa fa-pencil"
+                                            data-toggle="modal" data-target="#addAfiliacion" title="Editar"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/afiliacion" class="secondary-content" ><i
+                                            (click)="getAfiliacion(afiliado)" class="fa fa-eye"
+                                            data-toggle="modal" data-target="#viewAfiliacion" title="Ver detalle"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/afiliacion" class="secondary-content" ><i
+                                            (click)="chargeAfiliacion(afiliado)" class="fa fa-play"
+                                            data-toggle="modal" data-target="#addCobro" title="Generar cobro"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addAfiliacion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Crear afiliación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar afiliación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="idEmpresa">Empresa</label>
+                            <select class="custom-select custom-select-sm" formControlName="idEmpresa"
+                                [(ngModel)]="afiliacion.idEmpresa" (change)="listEmpleadoByEmpresa(afiliacion.idEmpresa)">
+                                <option [value]="empresa.numeroIdentificacion" *ngFor="let empresa of empresas">{{ empresa.nombre }}</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label for="idEmpleado">Empleado</label>
+                            <select class="custom-select custom-select-sm" formControlName="idEmpleado"
+                                [(ngModel)]="afiliacion.idPersona" (change)="listByEmpleado(afiliacion.idPersona, afiliacion.idEmpresa)">
+                                <option [value]="empleado.idPersona" *ngFor="let empleado of empleados">{{ empleado.nombrePersona }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="idTipo">Tipo de afiliación</label>
+                            <select class="custom-select custom-select-sm" formControlName="idTipo"
+                                [(ngModel)]="idTipo" (change)="listAdministradoras()">
+                                <option [value]="tipo.id" *ngFor="let tipo of tipos">{{ tipo.tipo }}</option>
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <label for="idAdministradora">Administradora</label>
+                            <select class="custom-select custom-select-sm" formControlName="idAdministradora"
+                                [(ngModel)]="afiliacion.idAdministradora">
+                                <option [value]="administradora.id" *ngFor="let administradora of administradoras">{{ administradora.nombre }}</option>
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="fechaAfiliacion">Fecha de Afiliación</label>
+                                <input type="date" class="form-control" formControlName="fechaAfiliacion"
+                                    [(ngModel)]="afiliacion.fechaAfiliacion">
+                            </div>
+                        </div>
+                        <div *ngIf = "idTipo==3" class="col-3">
+                            <label for="idNivelRiesgo">Nivel de riesgo</label>
+                            <select class="custom-select custom-select-sm" formControlName="idNivelRiesgo"
+                                [(ngModel)]="afiliacion.idNivelRiesgo">
+                                <option [value]="nivel.id" *ngFor="let nivel of niveles">{{ nivel.valor }} => {{ nivel.porcentaje }}%</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <br>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Tipo</td>
+                                <td>Nombre empresa</td>
+                                <td>Nivel de riesgo</td>
+                                <td>Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let afiliacion of afiliacions; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{afiliacion.abreviatura}}</td>
+                                <td>{{afiliacion.nombreAdministradora}}</td>
+                                <td>{{afiliacion.nivelRiesgo}}</td>
+                                <td *ngIf="afiliacion.activo==1">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(afiliacion.id)">
+                                    </div>
+                                </td>
+                                <td *ngIf="afiliacion.activo==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(afiliacion.id)">
+                                    </div>
+                                    <a routerLink="/afiliacion" class="secondary-content" alt = "Editar"><i
+                                            (click)="getEstaAfiliacion(afiliacion)" class="fa fa-pencil"></i></a>
+                                </td>
+                                <td>
+                                    <a routerLink="/afiliacion" class="secondary-content"><i
+                                    (click)="delAfiliacion(afiliacion)" class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addAfiliacion()" [disabled]="!addForm.valid"
+                 >Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="updateAfiliacion()" [disabled]="!addForm.valid"
+                >Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Ventana modal ver detalle-->
+<div class="modal fade" id="viewAfiliacion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ver detalle de la afiliación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <p><b># Documento: </b>{{afiliacion.idPersona}}</p>
+                        </div>
+                        <div class="col-6">
+                            <p><b>Empleado: </b>{{afiliacion.nombrePersona}}</p>
+                        </div>
+                        <div class="col-2">
+                            <a routerLink="/afiliacion" class="secondary-content" alt = "Cargar constancia"><i
+                                (click)="changeLoad('CC', afiliacion.idPersona, 0)" class="fa fa-upload" ></i></a>                                
+                            &nbsp;
+                            <a *ngIf = "afiliacion.documento"  href={{afiliacion.documento}} class="secondary-content" alt = "ver archivo" target="_blank">
+                                <i class="fa fa-file"></i></a>                                
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <p><b>NIT: </b>{{afiliacion.idEmpresa}}</p>
+                        </div>
+                        <div class="col-8">
+                            <p><b>Empresa: </b>{{afiliacion.nombreEmpresa}}</p>
+                        </div>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Tipo</td>
+                                <td>Nombre empresa</td>
+                                <td>Fecha de afiliación</td>
+                                <td>Nivel de riesgo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let afiliacion of afiliacions; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{afiliacion.abreviatura}}</td>
+                                <td>{{afiliacion.nombreAdministradora}}</td>
+                                <td>{{afiliacion.fechaAfiliacion}}</td>
+                                <td>{{afiliacion.nivelRiesgo}}</td>
+                                <td>
+                                    <a routerLink="/afiliacion" class="secondary-content" alt = "Cargar constancia"><i
+                                        (click)="changeLoad(afiliacion.abreviatura, afiliacion.idPersona, afiliacion.id )" class="fa fa-upload" ></i></a>                                
+                                    &nbsp;
+                                    <a *ngIf = "afiliacion.archivo"  href={{afiliacion.archivo}} class="secondary-content" alt = "ver archivo" target="_blank">
+                                        <i class="fa fa-file"></i></a>                                
+    
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="container" *ngIf="cargarDocumento == true">
+                        <form [formGroup]="loadForm">
+                            <div class = "row">
+                                <div class="col-md-4">
+                                    Documento #: {{documento}}
+                                </div>
+                                <div class="col-md-2">
+                                    Tipo: {{tipo}}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="formFile" class="form-label">Archivo: (Tipo .pdf)</label>
+                                        <input class="form-control" 
+                                            type="file"
+                                            formControlName="strFile"
+                                            (change)="loadFile($event)">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Ventana para cobro-->
+<div class="modal fade" id="addCobro" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generar cobro de aportes individual</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="cobroForm">
+                <div class="modal-body">
+                    <div class = "row">
+                        <div class = "col-4">
+                            <p><b>Documento # </b> {{cobro.idEmpleado}} </p>
+                        </div>
+                        <div class = "col-8">
+                            <p><b>Empleado </b> {{cobro.empleado}} </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="anio">Año</label>
+                                <select class="custom-select custom-select-sm" formControlName="anio"
+                                    [(ngModel)]="cobro.anio"
+                                    (change)="getCuenta(cobro)">
+                                    <option [value]="anio" *ngFor="let anio of anios">{{ anio }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="mes">Mes</label>
+                                <select class="custom-select custom-select-sm" formControlName="mes"
+                                    [(ngModel)]="cobro.mes"
+                                    (change)="getCuenta(cobro)">
+                                    <option [value]="mes" *ngFor="let mes of meses; let idMes = index">{{ mes }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class = "col-md-4">
+                            <br>
+                            <button type="button" class="btn btn-success" (click)="liquidar(cobro)">Liquidar</button>
+                        </div>
+
+                    </div>
+                    <div class = "row">
+                        <div class = "col-4">
+                            <div class="form-group">
+                                <label for="administracion">Administración</label>
+                                <input type="text" class="form-control" formControlName="administracion"
+                                    [(ngModel)]="cobro.administracion">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addForm.get('administracion')?.invalid && (addForm.get('administracion')?.dirty || addForm.get('administracion')?.touched)">
+                                        Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <div class="form-group">
+                                <label for="aportes">Aportes</label>
+                                <input type="text" class="form-control" formControlName="aportes"
+                                    [(ngModel)]="cobro.aportes">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addForm.get('aportes')?.invalid && (addForm.get('aportes')?.dirty || addForm.get('aportes')?.touched)">
+                                        Este campo es requerido
+                                    </div>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <p><b>Total </b> {{cobro.total | number}}</p>
+                        </div>
+                    </div>
+                    <div class=" row">
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label for="banco">Cuenta de banco</label>
+                                <select class="custom-select custom-select-sm" formControlName="banco"
+                                [(ngModel)]="cobro.cuenta">
+                                    <option [value]="banco.cuenta" *ngFor="let banco of bancos">{{ banco.cuenta }}</option>
+                                </select>
+                            </div>  
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class = "col-4">
+                            <p><b>Tipo de facturación a realizar </b></p>   
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class = "col-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" formControlName="opcion" value = "1"
+                                [(ngModel)]="cobro.opcion">
+                                <label class="form-check-label" for="optionAdministracion">
+                                Únicamente administración
+                                </label>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" formControlName="opcion" value = "2"
+                                [(ngModel)]="cobro.opcion">
+                                <label class="form-check-label" for="optionAporte">
+                                Únicamente aportes
+                                </label>
+                            </div>
+                        </div>
+                        <div class = "col-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" formControlName="opcion" value = "3"
+                                [(ngModel)]="cobro.opcion">
+                                <label class="form-check-label" for="optionTodos">
+                                Ambos valores
+                                </label>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="facturar(cobro)" [disabled]="!cobroForm.valid"
+                data-dismiss="modal">Facturar</button>
+            </div>
+        </div>
+    </div>
+</div>

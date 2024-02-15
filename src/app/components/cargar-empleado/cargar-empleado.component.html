@@ -1,0 +1,31 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="idEmpresa">Empresa</label>
+                    <select class="custom-select custom-select-sm" formControlName="idEmpresa"
+                    [(ngModel)]="idEmpresa">
+                    <option [value]="empresa.numeroIdentificacion" *ngFor="let empresa of empresas">{{ empresa.nombre }}</option>
+                </select>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="formFile" class="form-label">Archivo de empleados (Tipo .CSV)</label>
+                        <input class="form-control" 
+                            type="file"
+                            formControlName="strFile"
+                            (change)="cargarEmpleado($event)">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" *ngIf="respuesta">
+                    <p ><b>Cantidad de registros procesados: </b> {{ respuesta.cantidad }}</p>
+                    <p ><b>Errores encontrados: </b> {{ respuesta.errors }}</p>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

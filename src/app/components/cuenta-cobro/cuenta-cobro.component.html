@@ -1,0 +1,194 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="anio">Año</label>
+                        <select class="custom-select custom-select-sm" formControlName="anio"
+                            [(ngModel)]="anio" (change)="listCuenta()">
+                            <option [value]="anio" *ngFor="let anio of anios">{{ anio }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="mes">Mes</label>
+                        <select class="custom-select custom-select-sm" formControlName="mes"
+                            [(ngModel)]="mes" (change)="listCuenta()">
+                            <option [value]="mes" *ngFor="let mes of meses; let idMes = index">{{ mes }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <br>
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            [(ngModel)]="key"
+                            placeholder = "Digite la palabra o valor a buscar"
+                            >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <br>
+                    <button type="button" class="btn btn-success" (click)="listCuenta()"
+                        [disabled]="!filterForm.valid">
+                        <i class="fas fa-search"></i>Buscar
+                    </button>
+                    <button type="button" class="btn btn-secondary" (click)="listTodos()">
+                        <i class="fas fa-eye"></i>Ver todos
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de cobros-->
+<section id="cobros">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de cuentas de cobro</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Documento #</th>
+                                <th>Nombre</th>
+                                <th>Administración</th>
+                                <th>Aportes</th>
+                                <th>Total</th>
+                                <th>Fecha de pago</th>
+                                <th>Valor pagado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let cuenta of cuentas; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{cuenta.idEmpresa}}</td>
+                                <td>{{cuenta.nombre}}</td>
+                                <td align="center">{{cuenta.administracion | number}}</td>
+                                <td align="center">{{cuenta.aportes | number}}</td>
+                                <td align="center">{{cuenta.total | number}}</td>
+                                <td align="center">{{cuenta.fechaPago | date: 'dd/MM/yyyy'}}</td>
+                                <td align="center">{{cuenta.pago | number}}</td>
+                                <td>
+                                    <a routerLink="/cuentaCobro" class="secondary-content" title = "Cuenta de cobro">
+                                    <i (click)="prnCuenta(cuenta)" class="fa fa-file" ></i></a>
+                                    &nbsp;
+                                    <a routerLink="/cuentaCobro" class="secondary-content" title = "Pagar de cuenta">
+                                    <i class="fa fa-money" aria-hidden="true" (click)="getCuenta(cuenta)"
+                                    data-toggle="modal" data-target="#addPago"></i></a>
+                                    &nbsp;
+                                    <a  *ngIf ="cuenta.pago==0"  routerLink="/cuentaCobro" class="secondary-content" title = "Borrar"><i
+                                     (click)="delCotizacion(cuenta.id)" class="fa fa-trash"></i></a>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Ventana modal ver detalle-->
+<div class="modal fade" id="addPago" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ver detalle de la afiliación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+                <div class="modal-body">
+  
+                    <div class="row">
+                        <div class="col-4">
+                            <p><b># Documento: </b>{{cuenta.idEmpresa}}</p>
+                        </div>
+                        <div class="col-8">
+                            <p><b>Nombre: </b>{{cuenta.nombre}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2">
+                            <p><b>Año: </b>{{cuenta.anio | number}}</p>
+                        </div>
+                        <div class="col-2">
+                            <p><b>Mes: </b>{{cuenta.mes}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <p><b>Valor aportes: </b>{{cuenta.aportes | number}}</p>
+                        </div>
+                        <div class="col-4">
+                            <p><b>Valor administración: </b>{{cuenta.administracion | number}}</p>
+                        </div>
+                        <div class="col-4">
+                            <p><b>Total: </b>{{cuenta.total | number}}</p>
+                        </div>
+                    </div>
+                    <form [formGroup]="pagoForm">
+                        <div class = "row">
+                            <div class = "col-4">
+                                <div class="form-group">
+                                    <label for="valorPagar">Valor a pagar</label>
+                                    <input type="number" class="form-control" formControlName="valorPagar"
+                                        [(ngModel)]="valorPagar">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="pagoForm.get('valorPagar')?.invalid && (pagoForm.get('valorPagar')?.dirty || pagoForm.get('valorPagar')?.touched)">
+                                        Este campo es requerido
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <br>
+                                <button type="button" class="btn btn-success" (click)="addPago(cuenta, valorPagar)" [disabled]="!pagoForm.valid">Pagar</button>
+                            </div>
+                        </div>
+                    </form>
+                    <h5>Lista de pagos realizados</h5>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>ID</td>
+                                <td>Valor</td>
+                                <td>Fecha de pago</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let pago of pagos; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{pago.id}}</td>
+                                <td>{{pago.valor | number}}</td>
+                                <td>{{pago.fecha | date: 'dd/MM/yyyy'}}</td>
+                                <td>
+                                    <a routerLink="/cuentaCobro" class="secondary-content" title = "Borrar"><i
+                                        (click)="delPago(pago.id, pago.idFactura)" class="fa fa-trash"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/cuentaCobro" class="secondary-content" title = "Imprimir recibo"><i
+                                        (click)="prnRecibo(pago)" class="fa fa-file"></i></a>
+    
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

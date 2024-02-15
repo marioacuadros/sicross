@@ -1,0 +1,238 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="fecha">Fecha</label>
+                        <input type="date" class="form-control" formControlName="fecha"
+                            [(ngModel)]="fecha"
+                            (change)="movimiento()"    
+                        >
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-heard">
+                            <h4>Resumen diario</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><b>Total de entrada:</b> {{resumen.pago | number}}</p>
+                            <p><b>Total otra entrada:</b> {{resumen.entrada | number}}</p>
+                            <p><b>Total de salida:</b> {{resumen.salida | number}}</p>
+                            <p><b>Total </b>{{resumen.total | number}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-heard">
+                            <h4>Consolidado</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><b>Total de entrada:</b> {{resumen.totalPago | number}}</p>
+                            <p><b>Total otra entrada:</b> {{resumen.totalEntrada | number}}</p>
+                            <p><b>Total de salida:</b> {{resumen.totalSalida | number}}</p>
+                            <p><b>Total </b>{{resumen.totalHistorico | number}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addSalida">
+                        <i class="fas fa-plus"></i>Crear salida
+                    </a>
+                    <br>
+                    <a href="#" class="btn btn-info btn-block" data-toggle="modal" data-target="#addEntrada">
+                        <i class="fas fa-plus"></i>Crear entrada
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!--Lista de pagos-->
+<section id="pagos">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Entradas</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td> No Documento</td>
+                                <td>Concepto</td>
+                                <td>Valor</td>
+                                <td>Fecha</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let pago of pagos; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{pago.identificacion}}</td>
+                                <td>{{pago.nombre}}</td>
+                                <td>{{pago.valor | number}}</td>
+                                <td>{{pago.fecha | date: 'dd/MM/yyyy'}}</td>
+                                <td>
+                                    <a *ngIf ="pago.tipo==2" routerLink="/caja" class="secondary-content"><i
+                                    (click)="delEntrada(pago.id)" class="fa fa-trash"></i></a>
+                                    &nbsp;
+                                    <a *ngIf ="pago.tipo==2" routerLink="/caja" class="secondary-content"><i
+                                        (click)="prnRecibo(pago)" class="fa fa-file"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Salidas</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td> No Documento</td>
+                                <td>Concepto</td>
+                                <td>Valor</td>
+                                <td>Fecha</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let salida of salidas; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{salida.numero}}</td>
+                                <td>{{salida.concepto}}</td>
+                                <td>{{salida.valor | number}}</td>
+                                <td>{{salida.fecha | date: 'dd/MM/yyyy'}}</td>
+                                <td>
+                                    <a routerLink="/caja" class="secondary-content"><i
+                                    (click)="delSalida(salida.id)" class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addSalida" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" >
+                <h5 class="modal-title">Crear salida</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="numero"># comprobante</label>
+                                <input type="text" class="form-control" formControlName="numero"
+                                    [(ngModel)]="salida.numero">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="concepto">Concepto</label>
+                                <input type="text" class="form-control" formControlName="concepto"
+                                    [(ngModel)]="salida.concepto">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addForm.get('concepto')?.invalid && (addForm.get('concepto')?.dirty || addForm.get('concepto')?.touched)">
+                                        Este campo es requerido
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="valor">Valor</label>
+                                <input type="number" class="form-control" formControlName="valor"
+                                    [(ngModel)]="salida.valor">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addForm.get('valor')?.invalid && (addForm.get('valor')?.dirty || addForm.get('valor')?.touched)">
+                                        Este campo es requerido
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addSalida()" [disabled]="!addForm.valid"
+                data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addEntrada" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" >
+                <h5 class="modal-title">Crear otra entrada</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addFormEntrada">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="numero"># Comprobante</label>
+                                <input type="text" class="form-control" formControlName="numero"
+                                    [(ngModel)]="entrada.numero">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="concepto">Concepto</label>
+                                <input type="text" class="form-control" formControlName="concepto"
+                                    [(ngModel)]="entrada.concepto">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addFormEntrada.get('concepto')?.invalid && (addFormEntrada.get('concepto')?.dirty || addFormEntrada.get('concepto')?.touched)">
+                                        Este campo es requerido
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="valor">Valor</label>
+                                <input type="number" class="form-control" formControlName="valor"
+                                    [(ngModel)]="entrada.valor">
+                                    <div class="alert alert-danger" role="alert"
+                                        *ngIf="addFormEntrada.get('valor')?.invalid && (addFormEntrada.get('valor')?.dirty || addFormEntrada.get('valor')?.touched)">
+                                        Este campo es requerido
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addEntrada()" [disabled]="!addFormEntrada.valid"
+                data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
