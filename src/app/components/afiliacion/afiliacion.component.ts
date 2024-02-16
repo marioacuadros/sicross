@@ -51,6 +51,7 @@ export class AfiliacionComponent {
         mes: ['', Validators.required],
         anio: ['', Validators.required],
         banco: ['', Validators.required],
+        tipoCobro: ['', Validators.required],
       })
       this.loadForm = this.frmBuilder.group({
         strFile:[],
@@ -79,6 +80,7 @@ export class AfiliacionComponent {
       mes:'',
       anio:0,
       cuenta:'',
+      tipoCobro:0,
     };
 
     //Objeto afiliacion

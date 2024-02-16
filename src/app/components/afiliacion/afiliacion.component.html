@@ -386,6 +386,16 @@
                                 </select>
                             </div>  
                         </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="tipoCobro">Tipo de cuenta de cobro</label>
+                                <select class="custom-select custom-select-sm" formControlName="tipoCobro"
+                                [(ngModel)]="cobro.tipoCobro">
+                                    <option [value]="1">Tipo A</option>
+                                    <option [value]="2">Tipo B</option>
+                                </select>
+                            </div>  
+                        </div>
                     </div>
                     <div class = "row">
                         <div class = "col-4">
