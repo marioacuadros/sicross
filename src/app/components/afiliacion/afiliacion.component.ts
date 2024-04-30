@@ -52,6 +52,7 @@ export class AfiliacionComponent {
         anio: ['', Validators.required],
         banco: ['', Validators.required],
         tipoCobro: ['', Validators.required],
+        concepto:[],
       })
       this.loadForm = this.frmBuilder.group({
         strFile:[],
@@ -81,6 +82,7 @@ export class AfiliacionComponent {
       anio:0,
       cuenta:'',
       tipoCobro:0,
+      concepto:'',
     };
 
     //Objeto afiliacion
@@ -154,12 +156,14 @@ export class AfiliacionComponent {
 
     getAfiliacion(afiliado:any)
     {
-      //this.modoEdicion = true
+      this.modoEdicion = true
       this.afiliacion.idEmpresa = afiliado.idEmpresa
       this.afiliacion.idPersona = afiliado.idPersona
       this.afiliacion.nombrePersona = afiliado.nombrePersona
       this.afiliacion.nombreEmpresa = afiliado.nombreEmpresa
       this.afiliacion.documento = afiliado.documento
+      this.listEmpleadoByEmpresa(this.afiliacion.idEmpresa)
+      console.log(this.afiliacion)
       this.listEmpresa()
       this.listAdministradoras()
       //this.listEmpleadoByEmpresa(afiliado.idEmpresa)
@@ -310,6 +314,7 @@ export class AfiliacionComponent {
 
     getCuenta(cobro:any){
       let cobroTmp: any = cobro
+      console.log(cobro)
       this.personaService.getCuenta(cobro).subscribe(
         (result:any) => {
               this.cobro = result[0];

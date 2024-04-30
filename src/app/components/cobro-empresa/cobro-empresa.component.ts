@@ -28,6 +28,7 @@ export class CobroEmpresaComponent {
       opcion: ['', Validators.required],
       banco: ['', Validators.required],
       tipoCobro: ['', Validators.required],
+      concepto:[],
     });
   }
   empresas:any=null
@@ -58,6 +59,7 @@ export class CobroEmpresaComponent {
     opcion:3,
     cuenta:'',
     tipoCobro:1,
+    concepto:'',
   };
  
   cuenta: any = {
